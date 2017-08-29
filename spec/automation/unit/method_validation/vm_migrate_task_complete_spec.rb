@@ -26,4 +26,14 @@ describe 'vmmigratetask_complete method' do
     attrs << "vm_migrate_task_id=#{miq_request_task.id}"
     MiqAeEngine.instantiate("/Infrastructure/VM/Migrate/Email/VmMigrateTask_Complete?event=vm_migrated&#{attrs.join('&')}", user)
   end
+
+  it 'sends email to nil' do
+    expect(GenericMailer).not_to receive(:deliver).with(:automation_notification,
+                                                        hash_including(:to   => nil,
+                                                                       :from => "evmadmin@example.com"))
+    attrs = ["MiqServer::miq_server=#{miq_server.id}"]
+    attrs << "MiqRequestTask::vm_migrate_task=#{miq_request_task.id}"
+    attrs << "vm_migrate_task_id=#{miq_request_task.id}"
+    MiqAeEngine.instantiate("/Infrastructure/VM/Migrate/Email/VmMigrateTask_Complete?event=vm_migrated&#{attrs.join('&')}", user)
+  end
 end
